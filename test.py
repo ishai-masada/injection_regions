@@ -26,15 +26,20 @@ def write_coords(sorted_coordinates, filename):
             coord_writer.writerow([point[0], point[1], point[2]])
 
 
-def cross_section(x_location, precision):
-    # Identify the general x-location for the data set
-    approximate_x = str(sorted_x[int(len(sorted_x) * x_location)])[0:precision]
+def cross_section(desired_point, precisions):
+    desired_location = []
+
+    # Identify the general locations for the data set
+    approximate_x = str(sorted_x[int(len(sorted_x) * desired_point[0])])[0:precisions[0]]
+    approximate_y = str(sorted_y[int(len(sorted_y) * desired_point[1])])[0:precisions[1]]
+    approximate_z = str(sorted_z[int(len(sorted_z) * desired_point[2])])[0:precisions[2]]
+    desired_location.append(tuple([approximate_x, approximate_y, approximate_z]))
 
     # Coordinates as points
     coordinates = list(zip(x_values, y_values, z_values))
 
     # Filter the coordinates by the common x-value
-    sorted_coordinates = tuple([coordinate for coordinate in coordinates if approximate_x in coordinate[0]])
+    sorted_coordinates = tuple([coordinate for idx, coordinate in enumerate(coordinates) if all([approximate_x in coordinate[0], approximate_y in coordinate[1], approximate_z in coordinate[2]])])
 
     return sorted_coordinates
 
@@ -59,13 +64,18 @@ for line in raw_data:
     z_values.append(str(float(coord_set[2][:-4]) / 10**(int(coord_set[2][-1:]))))
 
 sorted_x = x_values.copy()
+sorted_y = y_values.copy()
+sorted_z = z_values.copy()
 sorted_x.sort()
+sorted_y.sort()
+sorted_z.sort()
 
-x_location = 0.5 # Spanwise location of the blade
-precision = 4 # How many digits to include from each coordinate
+#x_location = 0.5 # Spanwise location of the blade
+desired_point = [0.5, 0.5, 0.5]
+precisions = [3, 5, 5] # How many digits to include from each coordinate
 
 # Get the coordintes for a user-defined spanwise location
-sorted_coordinates = cross_section(x_location, precision)
+sorted_coordinates = cross_section(desired_point, precisions)
 
 filename = 'test regions.csv'
 write_coords(sorted_coordinates, filename)
