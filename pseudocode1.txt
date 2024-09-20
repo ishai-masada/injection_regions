@@ -1,0 +1,8 @@
+Here are some requirements I would like for a Python tool that generates injection hole locations for cooling:
+
+Blade geometry is loaded, ideally as a profile.curve file, but also CFX geometry file as you are doing now.
+Internally, the code splits the surface into a pressure side and suction side.
+Note it doesn’t matter which is which, simply split the blade surface geometry into side 1 and 2. You can split it if you first find the leading and trailing edge (max and min axial coordinates at each span).
+User specifies a list of cooling hole locations in terms of span and chord fractions, and whether this is on side 1 or 2.
+Even if we don’t know which side is which, the user can try one and check, then change selection if needed, it’s 50/50. This is much easier than having the code internally tell which is the suction side (convex) and which is the pressure side (concave) of the blade (though that could be done).
+Code creates coordinates of all injection holes so they lie on the blade surface accordingly.

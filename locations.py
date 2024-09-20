@@ -49,7 +49,8 @@ z_values = []
 # Separate and Scale the Coordinates
 for line in raw_data:
     # Separate the coordinates into x, y, and z coordinates
-    coord_set = line.split(',')
+    coord_set = line.split()
+    print(coord_set)
 
     # Add each coordinate to its corresponding list and apply its scientific notation
     x_values.append(str(float(coord_set[0][:-4]) / 10**(int(coord_set[0][-1:]))))
@@ -69,9 +70,10 @@ y_locations = [0.1, 0.5, 0.9] # Spanwise location of the blade
 z_locations = [0.1, 0.5, 0.9] # Spanwise location of the blade
 '''
 precision = 4 # How many digits to include from each coordinate
+x_location = 0.5
 
 # Get the coordintes for a user-defined spanwise location
-sorted_coordinates = get_loc_from_x(0.5, precision)
+sorted_coordinates = get_loc_from_x(x_location, precision)
 
 filename = 'injection regions.csv'
 write_coords(sorted_coordinates, filename)
