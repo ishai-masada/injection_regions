@@ -64,8 +64,6 @@ for beh in t:
 
 plt.show()
 
-'''
 for beh in t:
     point = bezier_function(beh, degree, control_points)
     print(point)
-'''
