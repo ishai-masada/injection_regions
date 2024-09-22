@@ -60,10 +60,6 @@ for beh in t:
     point = bezier_function(beh, degree, control_points)
     x = numpy.array([point.x_coord])
     y = numpy.array([point.y_coord])
-    plt.plot(x, y)
+    plt.plot(x, y, 'o')
 
 plt.show()
-
-for beh in t:
-    point = bezier_function(beh, degree, control_points)
-    print(point)
