@@ -56,7 +56,6 @@ degree = len(control_points) - 1
 step_size = 0.1
 t = numpy.arange(0, 1 + step_size, step_size)
 
-'''
 for beh in t:
     point = bezier_function(beh, degree, control_points)
     x = numpy.array([point.x_coord])
@@ -64,7 +63,6 @@ for beh in t:
     plt.plot(x, y)
 
 plt.show()
-'''
 
 for beh in t:
     point = bezier_function(beh, degree, control_points)
