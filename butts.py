@@ -24,7 +24,9 @@ x_values = np.array(x_values, dtype='float')
 y_values = np.array(x_values, dtype='float')
 z_values = np.array(x_values, dtype='float')
 
+'''
 figure = plt.figure()
 axes = figure.add_subplot(projection='3d')
 axes.scatter(x_values, y_values, z_values)
 plt.show()
+'''
