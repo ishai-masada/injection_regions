@@ -2,8 +2,9 @@ import numpy
 import math
 import matplotlib.pyplot as plt
 
+
 # Check if this makes sense
-class BPoly():
+class Bezier_Curve():
     pass
 
 class PositionVector:
@@ -39,27 +40,36 @@ def basis_polynomial(parameter, degree, iterator):
 
 
 # Returns the coordinate of a point on the curve
-def bezier_function(parameter, degree, control_points):
+def bezier_function(parameter, control_points):
     position = control_points[0]
+
+    # Degree of 3 yields a cubic curve
+    degree = len(control_points) - 1
+
     for idx, control_point in enumerate(control_points):
         position = position + control_point.scalar_mul(basis_polynomial(parameter, degree, idx))
 
     return position
 
-# Store the control points in a Numpy array
-control_points = numpy.asarray([PositionVector(0, 0), PositionVector(1, 2), PositionVector(2, 3)])
+# Read in the control points from the bladegen file
+with open('span 0 rotor lower.txt', 'r') as f:
+    lower_points = f.read().splitlines()
 
-# Degree of 3 yields a cubic curve
-degree = len(control_points) - 1
+with open('span 0 rotor upper.txt', 'r') as f:
+    upper_points = f.read().splitlines()
+
+lower_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])).scalar_mul(-1)  for point in lower_points]
+upper_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])).scalar_mul(-1)  for point in upper_points]
 
 # Parameter
 step_size = 0.1
 t = numpy.arange(0, 1 + step_size, step_size)
 
 for beh in t:
-    point = bezier_function(beh, degree, control_points)
-    x = numpy.array([point.x_coord])
-    y = numpy.array([point.y_coord])
+    upper = bezier_function(beh, upper_points)
+    lower = bezier_function(beh, lower_points)
+    x = numpy.array([upper.x_coord, lower.x_coord])
+    y = numpy.array([upper.y_coord, lower.y_coord])
     plt.plot(x, y, 'o')
 
 plt.show()
