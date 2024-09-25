@@ -1,33 +1,18 @@
 import numpy
 import math
 import matplotlib.pyplot as plt
+import sys
 
+# Change the list of target searches
+sys.path.insert(0, '/home/imasada/code/custom_curves/')
+
+# Import the Position Vector class
+from pointclass import PositionVector
 
 # Check if this makes sense
 class Bezier_Curve():
     pass
 
-class PositionVector:
-    # This is a point, but the truer representation of the object is a position vector. Will manipulate it as such.
-    def __repr__(self):
-            return f"Point: {round(self.x_coord, 5)}, {round(self.y_coord, 5)}"
-
-    def __init__(self, x, y):
-        self.x_coord = x
-        self.y_coord = y
-
-    def __add__(self, other_point):
-        return PositionVector(self.x_coord + other_point.x_coord, self.y_coord + other_point.y_coord)
-
-    def scalar_mul(self, scalar):
-        return PositionVector(self.x_coord * scalar, self.y_coord * scalar)
-
-    def change_x(self, new_x):
-        self.x_coord = new_x
-
-    def change_y(self, new_y):
-        self.y_coord = new_y
-        
 
 # Returns a binomial coefficient given the degree of the polynomial and the index of the term
 def binomial_coefficient(degree, iterator):
@@ -62,7 +47,7 @@ lower_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\
 upper_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])).scalar_mul(-1)  for point in upper_points]
 
 # Parameter
-step_size = 0.1
+step_size = 0.01
 t = numpy.arange(0, 1 + step_size, step_size)
 
 for beh in t:
