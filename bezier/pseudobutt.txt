@@ -1,0 +1,6 @@
+Define Bezier Function
+    - Parameters: list of parameters, list of control points 
+    - initialize a list of positions with quantity equal to the number of parameter values
+        - Each position should be equal to the first control point 
+    
+    - return list of points

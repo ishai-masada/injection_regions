@@ -9,52 +9,77 @@ sys.path.insert(0, '/home/imasada/code/custom_curves/')
 # Import the Position Vector class
 from pointclass import PositionVector
 
-# Check if this makes sense
-class Bezier_Curve():
-    pass
+# Class Object for a single Bezier Curve
+class BezierCurve():
 
 
-# Returns a binomial coefficient given the degree of the polynomial and the index of the term
-def binomial_coefficient(degree, iterator):
-    return math.factorial(degree) / (math.factorial(iterator) * math.factorial(degree - iterator))
+    def __init__(self, control_points, parameter):
+        self.control_points = control_points
+        self.parameter = parameter
+        self.positions = []
 
 
-# Returns the bernstein polynomial coefficient
-def basis_polynomial(parameter, degree, iterator):
-    return binomial_coefficient(degree, iterator) * (parameter**iterator) * ((1 - parameter)**(degree - iterator))
+    # Returns a binomial coefficient given the degree of the polynomial and the index of the term
+    def binomial_coefficient(self, degree, iterator):
+        return math.factorial(degree) / (math.factorial(iterator) * math.factorial(degree - iterator))
 
 
-# Returns the coordinate of a point on the curve
-def bezier_function(parameter, control_points):
-    position = control_points[0]
+    # Returns the bernstein polynomial coefficient
+    def basis_polynomial(self, parameter, degree, iterator):
+        return self.binomial_coefficient(degree, iterator) * (parameter**iterator) * ((1 - parameter)**(degree - iterator))
 
-    # Degree of 3 yields a cubic curve
-    degree = len(control_points) - 1
 
-    for idx, control_point in enumerate(control_points):
-        position = position + control_point.scalar_mul(basis_polynomial(parameter, degree, idx))
+    # Returns the coordinate of a single point on the curve
+    def bezier_function(self):
+        degree = len(self.control_points) - 1
 
-    return position
+        # Iterate Through Each Parameter Step
+        for j in self.parameter:
+            position = self.control_points[0]
+
+            # Apply the effects of each control point to the parameter
+            for i, point in enumerate(self.control_points):
+                position = position + point.scalar_mul(self.basis_polynomial(j, degree, i))
+
+            self.positions.append(position)
+
+    '''
+    Places the positions onto a plot displaying anything to the user.
+
+    The function plot.show() should only be called after all curves are placed onto the plot.
+    '''
+    def plot_points(self):
+        for i in range(0, len(self.positions)):
+            x = numpy.array([self.positions[i].x_coord])
+            y = numpy.array([self.positions[i].y_coord])
+
+            plt.plot(x, y, 'o')
+
+        
 
 # Read in the control points from the bladegen file
-with open('span 0 rotor lower.txt', 'r') as f:
+with open('data/span 0 rotor lower.txt', 'r') as f:
     lower_points = f.read().splitlines()
 
-with open('span 0 rotor upper.txt', 'r') as f:
+with open('data/span 0 rotor upper.txt', 'r') as f:
     upper_points = f.read().splitlines()
 
 lower_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])).scalar_mul(-1)  for point in lower_points]
 upper_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])).scalar_mul(-1)  for point in upper_points]
 
 # Parameter
-step_size = 0.01
-t = numpy.arange(0, 1 + step_size, step_size)
+resolution = 0.1
+t = numpy.arange(0, 1 + resolution, resolution)
 
-for beh in t:
-    upper = bezier_function(beh, upper_points)
-    lower = bezier_function(beh, lower_points)
-    x = numpy.array([upper.x_coord, lower.x_coord])
-    y = numpy.array([upper.y_coord, lower.y_coord])
-    plt.plot(x, y, 'o')
+upper_curve = BezierCurve(upper_points, t)
+lower_curve = BezierCurve(lower_points, t)
+
+# Produce the curve
+upper_curve.bezier_function()
+lower_curve.bezier_function()
+
+# Plot the full curves without showing the plot
+upper_curve.plot_points()
+lower_curve.plot_points()
 
 plt.show()
