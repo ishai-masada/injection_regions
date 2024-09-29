@@ -34,12 +34,12 @@ class BezierCurve():
         degree = len(self.control_points) - 1
 
         # Iterate Through Each Parameter Step
-        for j in self.parameter:
-            position = self.control_points[0]
+        for t in self.parameter:
+            position = PositionVector(0, 0)
 
             # Apply the effects of each control point to the parameter
-            for i, point in enumerate(self.control_points):
-                position = position + point.scalar_mul(self.basis_polynomial(j, degree, i))
+            for idx, point in enumerate(self.control_points):
+                position += point.scalar_mul(self.basis_polynomial(t, degree, idx))
 
             self.positions.append(position)
 
@@ -64,22 +64,31 @@ with open('data/span 0 rotor lower.txt', 'r') as f:
 with open('data/span 0 rotor upper.txt', 'r') as f:
     upper_points = f.read().splitlines()
 
-lower_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])).scalar_mul(-1)  for point in lower_points]
-upper_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])).scalar_mul(-1)  for point in upper_points]
+with open('data/span 0 rotor upper trailing.txt', 'r') as f:
+    upper_trailing_points = f.read().splitlines()
+
+lower_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in lower_points]
+upper_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_points]
+upper_trailing_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_trailing_points]
 
 # Parameter
-resolution = 0.1
+resolution = 0.05
 t = numpy.arange(0, 1 + resolution, resolution)
 
 upper_curve = BezierCurve(upper_points, t)
+upper_trailing_curve = BezierCurve(upper_trailing_points, t)
 lower_curve = BezierCurve(lower_points, t)
 
 # Produce the curve
 upper_curve.bezier_function()
+upper_trailing_curve.bezier_function()
 lower_curve.bezier_function()
 
 # Plot the full curves without showing the plot
 upper_curve.plot_points()
+upper_trailing_curve.plot_points()
 lower_curve.plot_points()
+
+#print(upper_curve.positions)
 
 plt.show()
