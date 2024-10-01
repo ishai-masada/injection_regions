@@ -57,38 +57,91 @@ class BezierCurve():
 
         
 
-# Read in the control points from the bladegen file
-with open('data/span 0 rotor lower.txt', 'r') as f:
-    lower_points = f.read().splitlines()
+# Read in the control points from the bladegen files
+with open('data/zero/span 0 rotor lower.txt', 'r') as f:
+    lower_0 = f.read().splitlines()
 
-with open('data/span 0 rotor upper.txt', 'r') as f:
-    upper_points = f.read().splitlines()
+with open('data/zero/span 0 rotor upper.txt', 'r') as f:
+    upper_0 = f.read().splitlines()
 
-with open('data/span 0 rotor upper trailing.txt', 'r') as f:
-    upper_trailing_points = f.read().splitlines()
+with open('data/zero/span 0 rotor upper trailing.txt', 'r') as f:
+    upper_trailing_0 = f.read().splitlines()
 
-lower_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in lower_points]
-upper_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_points]
-upper_trailing_points = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_trailing_points]
+with open('data/half/span 0.5 rotor lower.txt', 'r') as f:
+    lower_05 = f.read().splitlines()
+
+with open('data/half/span 0.5 rotor upper.txt', 'r') as f:
+    upper_05 = f.read().splitlines()
+
+with open('data/half/span 0.5 rotor upper trailing.txt', 'r') as f:
+    upper_trailing_05 = f.read().splitlines()
+
+with open('data/end/span 1.0 rotor lower.txt', 'r') as f:
+    lower_1 = f.read().splitlines()
+
+with open('data/end/span 1.0 rotor upper.txt', 'r') as f:
+    upper_1 = f.read().splitlines()
+
+with open('data/end/span 1.0 rotor upper trailing.txt', 'r') as f:
+    upper_trailing_1 = f.read().splitlines()
 
 # Parameter
 resolution = 0.05
 t = numpy.arange(0, 1 + resolution, resolution)
 
-upper_curve = BezierCurve(upper_points, t)
-upper_trailing_curve = BezierCurve(upper_trailing_points, t)
-lower_curve = BezierCurve(lower_points, t)
+# Convert the data into the Position Vector type
+lower_0 = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in lower_0]
+upper_0 = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_0]
+upper_trailing_0 = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_trailing_0]
+
+lower_05 = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in lower_05]
+upper_05 = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_05]
+upper_trailing_05 = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_trailing_05]
+
+lower_1 = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in lower_1]
+upper_1 = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_1]
+upper_trailing_1 = [PositionVector(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_trailing_1]
+
+# Pass the data into a Bezier Curve class instance 
+lower_curve_0 = BezierCurve(lower_0, t)
+upper_curve_0 = BezierCurve(upper_0, t)
+upper_trailing_0 = BezierCurve(upper_trailing_0, t)
+
+lower_curve_05 = BezierCurve(lower_05, t)
+upper_curve_05 = BezierCurve(upper_05, t)
+upper_trailing_05 = BezierCurve(upper_trailing_05, t)
+
+lower_curve_1 = BezierCurve(lower_1, t)
+upper_curve_1 = BezierCurve(upper_1, t)
+upper_trailing_1 = BezierCurve(upper_trailing_1, t)
 
 # Produce the curve
-upper_curve.bezier_function()
-upper_trailing_curve.bezier_function()
-lower_curve.bezier_function()
+lower_curve_0.bezier_function()
+upper_curve_0.bezier_function()
+upper_trailing_0.bezier_function()
+
+lower_curve_05.bezier_function()
+upper_curve_05.bezier_function()
+upper_trailing_05.bezier_function()
+
+lower_curve_1.bezier_function()
+upper_curve_1.bezier_function()
+upper_trailing_1.bezier_function()
 
 # Plot the full curves without showing the plot
-upper_curve.plot_points()
-upper_trailing_curve.plot_points()
-lower_curve.plot_points()
+'''
+lower_curve_0.plot_points()
+upper_curve_0.plot_points()
+upper_trailing_0.plot_points()
 
-#print(upper_curve.positions)
+lower_curve_05.plot_points()
+upper_curve_05.plot_points()
+upper_trailing_05.plot_points()
+
+lower_curve_1.plot_points()
+upper_curve_1.plot_points()
+upper_trailing_1.plot_points()
+'''
+
 
 plt.show()
