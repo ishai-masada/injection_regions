@@ -1,5 +1,4 @@
 import numpy
-import math
 import matplotlib.pyplot as plt
 import sys
 
@@ -8,54 +7,8 @@ sys.path.insert(0, '/home/imasada/code/custom_curves/')
 
 # Import the Position Vector class
 from pointclass import PositionVector
+from BezierCurve import BezierCurve
 
-# Class Object for a single Bezier Curve
-class BezierCurve():
-
-
-    def __init__(self, control_points, parameter):
-        self.control_points = control_points
-        self.parameter = parameter
-        self.positions = []
-
-
-    # Returns a binomial coefficient given the degree of the polynomial and the index of the term
-    def binomial_coefficient(self, degree, iterator):
-        return math.factorial(degree) / (math.factorial(iterator) * math.factorial(degree - iterator))
-
-
-    # Returns the bernstein polynomial coefficient
-    def basis_polynomial(self, parameter, degree, iterator):
-        return self.binomial_coefficient(degree, iterator) * (parameter**iterator) * ((1 - parameter)**(degree - iterator))
-
-
-    # Returns the coordinate of a single point on the curve
-    def bezier_function(self):
-        degree = len(self.control_points) - 1
-
-        # Iterate Through Each Parameter Step
-        for t in self.parameter:
-            position = PositionVector(0, 0)
-
-            # Apply the effects of each control point to the parameter
-            for idx, point in enumerate(self.control_points):
-                position += point.scalar_mul(self.basis_polynomial(t, degree, idx))
-
-            self.positions.append(position)
-
-    '''
-    Places the positions onto a plot displaying anything to the user.
-
-    The function plot.show() should only be called after all curves are placed onto the plot.
-    '''
-    def plot_points(self):
-        for i in range(0, len(self.positions)):
-            x = numpy.array([self.positions[i].x_coord])
-            y = numpy.array([self.positions[i].y_coord])
-
-            plt.plot(x, y, 'o')
-
-        
 
 # Read in the control points from the bladegen files
 with open('data/zero/span 0 rotor lower.txt', 'r') as f:
@@ -130,10 +83,6 @@ upper_trailing_1.bezier_function()
 
 # Plot the full curves without showing the plot
 '''
-lower_curve_0.plot_points()
-upper_curve_0.plot_points()
-upper_trailing_0.plot_points()
-
 lower_curve_05.plot_points()
 upper_curve_05.plot_points()
 upper_trailing_05.plot_points()
@@ -142,6 +91,10 @@ lower_curve_1.plot_points()
 upper_curve_1.plot_points()
 upper_trailing_1.plot_points()
 '''
+
+lower_curve_0.plot_points()
+upper_curve_0.plot_points()
+upper_trailing_0.plot_points()
 
 
 plt.show()
