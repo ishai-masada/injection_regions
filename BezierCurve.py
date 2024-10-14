@@ -1,6 +1,6 @@
 import numpy
 import math
-from pointclass import PositionVector
+from Point import PositionVector
 import matplotlib.pyplot as plt
 
 class BezierCurve():

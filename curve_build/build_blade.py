@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0, '/home/imasada/code/custom_curves/')
 
 # Import the Position Vector class
-from pointclass import PositionVector
+from Point import PositionVector
 from BezierCurve import BezierCurve
 
 
@@ -90,6 +90,7 @@ upper_trailing_05.plot_points()
 lower_curve_1.plot_points()
 upper_curve_1.plot_points()
 upper_trailing_1.plot_points()
+
 '''
 
 lower_curve_0.plot_points()
