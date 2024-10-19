@@ -1,11 +1,9 @@
 import numpy
 import math
-from Point import PositionVector
+from Point import Point
 import matplotlib.pyplot as plt
 
 class BezierCurve():
-
-
     def __init__(self, control_points, parameter):
         self.control_points = control_points
         self.parameter = parameter
@@ -28,7 +26,7 @@ class BezierCurve():
 
         # Iterate Through Each Parameter Step
         for t in self.parameter:
-            position = PositionVector(0, 0)
+            position = Point(0, 0)
 
             # Apply the effects of each control point to the parameter
             for idx, point in enumerate(self.control_points):
