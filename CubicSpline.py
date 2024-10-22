@@ -47,8 +47,8 @@ class CubicSpline:
         constants = []
 
         for node in internal_nodes:
-           coefficients.append(first_derivative(node) - derivative_coefficients(node))
-           constant.append(node.y_coord)
+           coefficients.append(self.first_derivative(node) + [-1 * coefficient for coefficient in self.first_derivative(node)])
+           constants.append(0)
 
         return coefficients, constants
 
@@ -84,6 +84,9 @@ class CubicSpline:
         external_nodes = copy.deepcopy(self.nodes)
         del external_nodes[1:len(external_nodes) - 1]
 
+        beh = self.first_derivative_conditions(internal_nodes)
+        print(beh)
+
 
     def plot_points(self):
         pass
@@ -92,4 +95,4 @@ class CubicSpline:
 nodes = [Point(1, 2), Point(3, 1), Point(5, 5)]
 
 spline = CubicSpline(nodes)
-spline.get_coefficients()
+beh = spline.get_coefficients()
