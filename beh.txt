@@ -1,8 +1,0 @@
-polynomial definition coefficients
-define the coefficients of the polynomial using a node
-
-First Derivative Coefficients define derivative coefficients for a cubic polynomial
-subtract the coeffcients of the polynimial further from the first point from the polynomial on the other side of the point
-
-second derivative coefficients
-
