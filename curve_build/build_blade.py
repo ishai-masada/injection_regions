@@ -134,7 +134,19 @@ lower_curve_1.bezier_function()
 upper_curve_1.bezier_function()
 upper_trailing_1.bezier_function()
 
+# Put curves into data structures
+'''
+curves = [
+          lower_curve_0, upper_curve_0, upper_trailing_0,
+          lower_curve_05, upper_curve_05, upper_trailing_05,
+          lower_curve_1, upper_curve_1, upper_trailing_1,
+          lower_curve_025, upper_curve_025,
+          lower_curve_075, upper_curve_075
+         ]
+'''
+
 # Plot the curves
+'''
 lower_curve_0.plot_points()
 upper_curve_0.plot_points()
 upper_trailing_0.plot_points()
@@ -155,3 +167,37 @@ upper_curve_1.plot_points()
 upper_trailing_1.plot_points()
 
 plt.show()
+'''
+
+upper_curves = [
+                upper_curve_0, 
+                upper_trailing_0, 
+                upper_curve_05, 
+                upper_trailing_05, 
+                upper_curve_1, 
+                upper_trailing_1, 
+                upper_curve_025, 
+                upper_curve_075
+               ]
+
+lower_curves = [
+                lower_curve_0,
+                lower_curve_05,
+                lower_curve_1,
+                lower_curve_025,
+                lower_curve_075
+               ]
+
+chord_position = 25
+ps_ss = 'ps'
+
+points = []
+
+if ps_ss == 'ps':
+    for curve in lower_curves:
+        if type(curve) == BezierCurve:
+            points.append(curve.get_x_positions()[chord_position+1])
+        else:
+            points.append(curve[chord_position+1])
+
+print(points)

@@ -9,6 +9,14 @@ class BezierCurve():
         self.parameter = parameter
         self.positions = []
 
+    def get_x_positions(self):
+        x_positions = [point.x_coord for point in self.positions]
+        return x_positions
+
+    def get_y_positions(self):
+        y_positions = [point.y_coord for point in self.positions]
+        return y_positions
+
 
     # Returns a binomial coefficient given the degree of the polynomial and the index of the term
     def binomial_coefficient(self, degree, iterator):
