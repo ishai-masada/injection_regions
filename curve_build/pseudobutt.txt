@@ -1,6 +1,13 @@
-Define Bezier Function
-    - Parameters: list of parameters, list of control points 
-    - initialize a list of positions with quantity equal to the number of parameter values
-        - Each position should be equal to the first control point 
-    
-    - return list of points
+user input
+    - chord position in %
+    - span position in %
+    - pressure side or suction side (ps/ss)
+
+create the cross sections at 0.0, 0.25, 0.75, and 1.0 span positions
+
+apply ps/ss to isolate only upper/suction or lower/pressure curves
+apply chord position to interpolate a bspline along the span
+    - 
+apply the span position to obtain the point along the interpolated bspline curve
+
+return the point coordinates in a spreadsheet
