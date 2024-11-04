@@ -92,17 +92,17 @@ upper_1 = [Point(float(point.split('\t')[0]), float(point.split('\t')[1])) for p
 upper_trailing_1 = [Point(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_trailing_1]
 
 # Pass the data for span 0, 0.5, and 1.0 into a Bezier Curve class instance 
-lower_curve_0 = BezierCurve(lower_0, t)
-upper_curve_0 = BezierCurve(upper_0, t)
-upper_trailing_0 = BezierCurve(upper_trailing_0, t)
+lower_curve_0 = BezierCurve(lower_0, t, 'ps')
+upper_curve_0 = BezierCurve(upper_0, t, 'ss')
+upper_trailing_0 = BezierCurve(upper_trailing_0, t, 'ss')
 
-lower_curve_05 = BezierCurve(lower_05, t)
-upper_curve_05 = BezierCurve(upper_05, t)
-upper_trailing_05 = BezierCurve(upper_trailing_05, t)
+lower_curve_05 = BezierCurve(lower_05, t, 'ps')
+upper_curve_05 = BezierCurve(upper_05, t, 'ss')
+upper_trailing_05 = BezierCurve(upper_trailing_05, t, 'ss')
 
-lower_curve_1 = BezierCurve(lower_1, t)
-upper_curve_1 = BezierCurve(upper_1, t)
-upper_trailing_1 = BezierCurve(upper_trailing_1, t)
+lower_curve_1 = BezierCurve(lower_1, t, 'ps')
+upper_curve_1 = BezierCurve(upper_1, t, 'ss')
+upper_trailing_1 = BezierCurve(upper_trailing_1, t, 'ss')
 
 # Pass the data for span 0.25 & 0.75 into a scipy.interpolate BSpline class instance
 lower_tck_025 = interpolate.splrep(lower_x_025, lower_y_025, s=0, k=3)
@@ -110,40 +110,31 @@ upper_tck_025 = interpolate.splrep(upper_x_025, upper_y_025, s=0, k=3)
 
 lower_x_025 = numpy.linspace(min(lower_x_025), max(lower_x_025), 100)
 upper_x_025 = numpy.linspace(min(upper_x_025), max(upper_x_025), 100)
-lower_curve_025 = interpolate.BSpline(*lower_tck_025)(lower_x_025)
-upper_curve_025 = interpolate.BSpline(*upper_tck_025)(upper_x_025)
 
 lower_tck_075 = interpolate.splrep(lower_x_075, lower_y_075, s=0, k=3)
 upper_tck_075 = interpolate.splrep(upper_x_075, upper_y_075, s=0, k=3)
 
 lower_x_075 = numpy.linspace(min(lower_x_075), max(lower_x_075), 100)
 upper_x_075 = numpy.linspace(min(upper_x_075), max(upper_x_075), 100)
-lower_curve_075 = interpolate.BSpline(*lower_tck_075)(lower_x_075)
-upper_curve_075 = interpolate.BSpline(*upper_tck_075)(upper_x_075)
 
 # Produce the curves
 lower_curve_0.bezier_function()
 upper_curve_0.bezier_function()
 upper_trailing_0.bezier_function()
 
+lower_curve_025 = interpolate.BSpline(*lower_tck_025)(lower_x_025)
+upper_curve_025 = interpolate.BSpline(*upper_tck_025)(upper_x_025)
+
 lower_curve_05.bezier_function()
 upper_curve_05.bezier_function()
 upper_trailing_05.bezier_function()
 
+lower_curve_075 = interpolate.BSpline(*lower_tck_075)(lower_x_075)
+upper_curve_075 = interpolate.BSpline(*upper_tck_075)(upper_x_075)
+
 lower_curve_1.bezier_function()
 upper_curve_1.bezier_function()
 upper_trailing_1.bezier_function()
-
-# Put curves into data structures
-'''
-curves = [
-          lower_curve_0, upper_curve_0, upper_trailing_0,
-          lower_curve_05, upper_curve_05, upper_trailing_05,
-          lower_curve_1, upper_curve_1, upper_trailing_1,
-          lower_curve_025, upper_curve_025,
-          lower_curve_075, upper_curve_075
-         ]
-'''
 
 # Plot the curves
 '''
@@ -169,35 +160,41 @@ upper_trailing_1.plot_points()
 plt.show()
 '''
 
-upper_curves = [
-                upper_curve_0, 
-                upper_trailing_0, 
-                upper_curve_05, 
-                upper_trailing_05, 
-                upper_curve_1, 
-                upper_trailing_1, 
-                upper_curve_025, 
-                upper_curve_075
-               ]
+curves = [
+          upper_curve_0, 
+          upper_trailing_0, 
+          upper_curve_05, 
+          upper_trailing_05, 
+          upper_curve_1, 
+          upper_trailing_1, 
+          upper_curve_025, 
+          upper_curve_075,
+          lower_curve_0,
+          lower_curve_05,
+          lower_curve_1,
+          lower_curve_025,
+          lower_curve_075
+         ]
 
-lower_curves = [
-                lower_curve_0,
-                lower_curve_05,
-                lower_curve_1,
-                lower_curve_025,
-                lower_curve_075
-               ]
-
-chord_position = 25
+lower_curves = []
+upper_curves = []
+chord_position = 0.25
 ps_ss = 'ps'
 
-points = []
+match ps_ss:
+    case 'ps':
+        for curve in curves:
+            if type(curve) == BezierCurve:
+                lower_curves.append(curve)
+            elif type(curve) == numpy.ndarray:
+                pass
 
-if ps_ss == 'ps':
-    for curve in lower_curves:
-        if type(curve) == BezierCurve:
-            points.append(curve.get_x_positions()[chord_position+1])
-        else:
-            points.append(curve[chord_position+1])
+        for curve in lower_curves:
+            desired_position = curve.get_position(chord_position).y_coord
+            print(desired_position)
+            plt.plot(chord_position, desired_position, marker='*')
 
-print(points)
+    case 'ss':
+        pass
+
+plt.show()

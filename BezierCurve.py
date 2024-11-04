@@ -4,10 +4,11 @@ from Point import Point
 import matplotlib.pyplot as plt
 
 class BezierCurve():
-    def __init__(self, control_points, parameter):
+    def __init__(self, control_points, parameter, ps_ss=None):
         self.control_points = control_points
         self.parameter = parameter
         self.positions = []
+        self.ps_ss = ps_ss
 
     def get_x_positions(self):
         x_positions = [point.x_coord for point in self.positions]
@@ -42,6 +43,16 @@ class BezierCurve():
 
             self.positions.append(position)
 
+    def get_position(self, parameter):
+        degree = len(self.control_points) - 1
+        position = Point(0, 0)
+
+        # Apply the effects of each control point to the parameter
+        for idx, point in enumerate(self.control_points):
+            position += point.scalar_mul(self.basis_polynomial(parameter, degree, idx))
+
+        return position
+        
     '''
     Places the positions onto a plot displaying anything to the user.
 

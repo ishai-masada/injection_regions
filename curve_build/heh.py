@@ -7,3 +7,5 @@ if ps_ss == 'pressure side':
     for curve in lower_curves:
         points.append(curve[chord_position]) 
 
+else:
+    pass
