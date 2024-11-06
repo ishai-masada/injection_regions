@@ -123,6 +123,7 @@ upper_curve_0.bezier_function()
 upper_trailing_0.bezier_function()
 
 lower_curve_025 = interpolate.BSpline(*lower_tck_025)(lower_x_025)
+#lower_curve_025 = [Point(lower_x_025[idx], lower_curve_025[idx]) for idx, x in enumerate(lower_x_025)]
 upper_curve_025 = interpolate.BSpline(*upper_tck_025)(upper_x_025)
 
 lower_curve_05.bezier_function()
@@ -160,41 +161,45 @@ upper_trailing_1.plot_points()
 plt.show()
 '''
 
-curves = [
-          upper_curve_0, 
-          upper_trailing_0, 
-          upper_curve_05, 
-          upper_trailing_05, 
-          upper_curve_1, 
-          upper_trailing_1, 
-          upper_curve_025, 
-          upper_curve_075,
-          lower_curve_0,
-          lower_curve_05,
-          lower_curve_1,
-          lower_curve_025,
-          lower_curve_075
-         ]
+splines = {
+           tuple(lower_x_025): lower_curve_025
+          }
 
-lower_curves = []
-upper_curves = []
+lower_curves = [
+                lower_curve_0,
+                lower_curve_05,
+                lower_curve_1,
+                lower_curve_025,
+                lower_curve_075
+               ]
+
+upper_curves = [
+                upper_curve_0, 
+                upper_trailing_0, 
+                upper_curve_05, 
+                upper_trailing_05, 
+                upper_curve_1, 
+                upper_trailing_1, 
+                upper_curve_025, 
+                upper_curve_075
+               ]
 chord_position = 0.25
 ps_ss = 'ps'
 
 match ps_ss:
     case 'ps':
-        for curve in curves:
+        for idx, curve in enumerate(lower_curves):
             if type(curve) == BezierCurve:
-                lower_curves.append(curve)
+                desired_position = curve.get_position(chord_position).y_coord
+                plt.plot(chord_position, desired_position, marker='*')
             elif type(curve) == numpy.ndarray:
                 pass
-
-        for curve in lower_curves:
-            desired_position = curve.get_position(chord_position).y_coord
-            print(desired_position)
-            plt.plot(chord_position, desired_position, marker='*')
+                '''
+                desired_position = splines[curve[idx]][idx]
+                print(desired_position)
+                '''
 
     case 'ss':
         pass
 
-plt.show()
+#plt.show()
