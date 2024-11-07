@@ -174,6 +174,7 @@ match ps_ss:
                     desired_x = chord_position * (max(x_positions) - min(x_positions)) + min(x_positions)
                     spanwise_points.append(Point(desired_x, desired_y))
                     #plt.plot(desired_x, desired_y, marker='*')
+
             elif type(curve) == numpy.ndarray:
                 for spline in splines:
                     if numpy.array_equal(curve, spline[1]):
@@ -197,6 +198,9 @@ match ps_ss:
                         spanwise_points.append(Point(chord_position, desired_y))
                         plt.plot(chord_position, desired_y, marker='*')
         '''
+# sort the spanwise points by ascending x-values
+spanwise_points = sorted(spanwise_points, key=lambda point: point.x_coord)
+print(spanwise_points)
 
 # Build a spline using the points along the span of the blade
 span_x = [point.x_coord for point in spanwise_points]
@@ -205,6 +209,6 @@ span_spline_tck = interpolate.splrep(span_x, span_y, s=0, k=3)
 
 span_x = numpy.linspace(min(span_x), max(span_x), 100)
 span_spline = interpolate.BSpline(*span_spline_tck)(span_x)
-#plt.plot(span_x, span_spline)
+plt.plot(span_x, span_spline)
 
-#plt.show()
+plt.show()
