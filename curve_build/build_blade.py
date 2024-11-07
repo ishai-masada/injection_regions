@@ -153,16 +153,16 @@ pressure_side_curves = [
                         lower_curve_0,
                         lower_curve_025,
                         lower_curve_05,
-                        lower_curve_075
-                        lower_curve_1,
+                        lower_curve_075,
+                        lower_curve_1
                        ]
 
 suction_side_curves = [
                        upper_curve_0, 
-                       upper_curve_05, 
-                       upper_curve_1, 
                        upper_curve_025, 
-                       upper_curve_075
+                       upper_curve_05, 
+                       upper_curve_075,
+                       upper_curve_1 
                       ]
 chord_position = 0.25
 ps_ss = 'ps'
@@ -173,6 +173,24 @@ match ps_ss:
         for curve in pressure_side_curves:
             if type(curve) == BezierCurve:
                     desired_y = curve.get_position(chord_position).y_coord
+                    x_positions = curve.get_x_positions()
+                    desired_x = chord_position * (max(x_positions) - min(x_positions)) + min(x_positions)
+                    spanwise_points.append(Point(desired_x, desired_y))
+                    plt.plot(desired_x, desired_y, marker='*')
+            elif type(curve) == numpy.ndarray:
+                for spline in splines:
+                    if numpy.array_equal(curve, spline[1]):
+                        desired_y = spline[1][int(chord_position*100)]
+                        x_positions = spline[0]
+                        desired_x = chord_position * (max(x_positions) - min(x_positions)) + min(x_positions)
+                        spanwise_points.append(Point(desired_x, desired_y))
+                        plt.plot(chord_position, desired_y, marker='*')
+
+    case 'ss':
+        '''
+        for curve in suction_side_curves:
+            if type(curve) == BezierCurve:
+                    desired_y = curve.get_position(chord_position).y_coord
                     spanwise_points.append(Point(chord_position, desired_y))
                     plt.plot(chord_position, desired_y, marker='*')
             elif type(curve) == numpy.ndarray:
@@ -181,8 +199,6 @@ match ps_ss:
                         desired_y = spline[1][int(chord_position*100)]
                         spanwise_points.append(Point(chord_position, desired_y))
                         plt.plot(chord_position, desired_y, marker='*')
-    case 'ss':
-        pass
+        '''
 
-print(len(spanwise_points))
 plt.show()
