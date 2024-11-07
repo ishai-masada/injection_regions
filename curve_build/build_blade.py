@@ -20,7 +20,6 @@ with open('data/zero/span 0 rotor lower.txt', 'r') as f:
 with open('data/zero/span 0 rotor upper.txt', 'r') as f:
     upper_0 = f.read().splitlines()
 
-
 # Span 0.25
 with open('data/quarter/span 0.25 rotor lower.txt', 'r') as f:
     lower_025 = f.read().splitlines()
@@ -34,7 +33,6 @@ with open('data/half/span 0.5 rotor lower.txt', 'r') as f:
 
 with open('data/half/span 0.5 rotor upper.txt', 'r') as f:
     upper_05 = f.read().splitlines()
-
 
 # Span 0.75
 with open('data/3_4th/span 0.75 rotor lower.txt', 'r') as f:
@@ -77,7 +75,6 @@ lower_y_075 = [point.y_coord for point in lower_075]
 upper_075 = [Point(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_075]
 upper_x_075 = [point.x_coord for point in upper_075]
 upper_y_075 = [point.y_coord for point in upper_075]
-
 
 lower_1 = [Point(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in lower_1]
 upper_1 = [Point(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in upper_1]
@@ -176,7 +173,7 @@ match ps_ss:
                     x_positions = curve.get_x_positions()
                     desired_x = chord_position * (max(x_positions) - min(x_positions)) + min(x_positions)
                     spanwise_points.append(Point(desired_x, desired_y))
-                    plt.plot(desired_x, desired_y, marker='*')
+                    #plt.plot(desired_x, desired_y, marker='*')
             elif type(curve) == numpy.ndarray:
                 for spline in splines:
                     if numpy.array_equal(curve, spline[1]):
@@ -184,7 +181,7 @@ match ps_ss:
                         x_positions = spline[0]
                         desired_x = chord_position * (max(x_positions) - min(x_positions)) + min(x_positions)
                         spanwise_points.append(Point(desired_x, desired_y))
-                        plt.plot(chord_position, desired_y, marker='*')
+                        #plt.plot(chord_position, desired_y, marker='*')
 
     case 'ss':
         '''
@@ -201,4 +198,13 @@ match ps_ss:
                         plt.plot(chord_position, desired_y, marker='*')
         '''
 
-plt.show()
+# Build a spline using the points along the span of the blade
+span_x = [point.x_coord for point in spanwise_points]
+span_y = [point.y_coord for point in spanwise_points]
+span_spline_tck = interpolate.splrep(span_x, span_y, s=0, k=3) 
+
+span_x = numpy.linspace(min(span_x), max(span_x), 100)
+span_spline = interpolate.BSpline(*span_spline_tck)(span_x)
+#plt.plot(span_x, span_spline)
+
+#plt.show()
