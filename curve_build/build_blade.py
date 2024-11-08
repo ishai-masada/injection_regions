@@ -142,13 +142,11 @@ lower_curve_1.bezier_function()
 upper_curve_1.bezier_function()
 
 # Plot the curves
-'''
 lower_curve_0.plot_points()
 upper_curve_0.plot_points()
 
 plt.plot(lower_x_025, lower_curve_025)
 plt.plot(upper_x_025, upper_curve_025)
-
 
 lower_curve_05.plot_points()
 upper_curve_05.plot_points()
@@ -160,7 +158,6 @@ lower_curve_1.plot_points()
 upper_curve_1.plot_points()
 
 plt.show()
-'''
 
 splines = [
            [lower_x_025, lower_curve_025], 
@@ -186,6 +183,7 @@ suction_side_curves = [
                       ]
 chord_position = 0.25
 span_position = 0.5
+blade_length = 0.2 # m
 ps_ss = 'ss'
 spanwise_points = []
 
@@ -241,7 +239,11 @@ span_spline = interpolate.BSpline(*span_spline_tck)(span_x)
 desired_x = span_x[int(span_position*resolution)]
 desired_y = span_spline[int(span_position*resolution)]
 
+filename = "Injection Locations"
+#write_coords(filename, [desired_x, desired_y, chord_position])
+'''
 plt.plot(span_x, span_spline)
 plt.plot(desired_x, desired_y, marker='*')
 
 plt.show()
+'''
