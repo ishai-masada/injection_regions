@@ -35,6 +35,20 @@ def write_coords(coordinates, filename):
         for point in sorted_coordinates:
             coord_writer.writerow([point[0], point[1], point[2]])
 
+def get_bezier_position(spanwise_points, curve):
+    desired_y = curve.get_position(chord_position).y_coord
+    z_positions = curve.get_x_positions()
+    desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
+    spanwise_points.append(Point(desired_z, desired_y))
+
+def get_spline_position(spanwise_points, splines, curve):
+    for spline in splines:
+        if numpy.array_equal(curve, spline[1]):
+            desired_y = curve(chord_position)
+            z_positions = spline[0]
+            desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
+            spanwise_points.append(Point(desired_z, desired_y))
+
 # Read in the control points from the bladegen files
 
 # Span 0
@@ -186,38 +200,18 @@ match ps_ss:
     case 'ps':
         for curve in pressure_side_curves:
             if type(curve) == BezierCurve:
-                desired_y = curve.get_position(chord_position).y_coord
-                z_positions = curve.get_x_positions()
-                desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
-                spanwise_points.append(Point(desired_z, desired_y))
-                #plt.plot(desired_x, desired_y, marker='*')
+                get_bezier_position(spanwise_points, curve)
 
             elif type(curve) == interpolate._cubic.CubicSpline:
-                for spline in splines:
-                    if numpy.array_equal(curve, spline[1]):
-                        desired_y = curve(chord_position)
-                        z_positions = spline[0]
-                        desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
-                        spanwise_points.append(Point(desired_z, desired_y))
-                        #plt.plot(chord_position, desired_y, marker='*')
+                get_spline_position(spanwise_points, splines, curve)
 
     case 'ss':
         for curve in suction_side_curves:
             if type(curve) == BezierCurve:
-                desired_y = curve.get_position(chord_position).y_coord
-                z_positions = curve.get_x_positions()
-                desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
-                spanwise_points.append(Point(desired_z, desired_y))
-                #plt.plot(desired_x, desired_y, marker='*')
+                get_bezier_position(spanwise_points, curve)
 
             elif type(curve) == interpolate._cubic.CubicSpline:
-                for spline in splines:
-                    if numpy.array_equal(curve, spline[1]):
-                        desired_y = curve(chord_position)
-                        z_positions = spline[0]
-                        desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
-                        spanwise_points.append(Point(desired_z, desired_y))
-                        #plt.plot(chord_position, desired_y, marker='*')
+                get_spline_position(spanwise_points, splines, curve)
 
 # sort the spanwise points by ascending x-values
 spanwise_points = sorted(spanwise_points, key=lambda point: point.x_coord)
