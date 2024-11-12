@@ -1,4 +1,5 @@
-from scipy import interpolate 
+from scipy.interpolate import CubicSpline
+from scipy import interpolate
 import numpy
 import matplotlib.pyplot as plt
 import sys
@@ -73,8 +74,8 @@ with open('data/end/span 1.0 rotor upper.txt', 'r') as f:
 
 
 # Parameter
-resolution = 0.01
-t = numpy.arange(0, 1, resolution)
+bezier_resolution = 0.01
+t = numpy.arange(0, 1, bezier_resolution)
 
 # Convert the data into the Position Vector type
 lower_0 = [Point(float(point.split('\t')[0]), float(point.split('\t')[1])) for point in lower_0]
@@ -112,53 +113,48 @@ upper_curve_05 = BezierCurve(upper_05, t, 'ss')
 lower_curve_1 = BezierCurve(lower_1, t, 'ps')
 upper_curve_1 = BezierCurve(upper_1, t, 'ss')
 
-# Pass the data for span 0.25 & 0.75 into a scipy.interpolate BSpline class instance
-lower_tck_025 = interpolate.splrep(lower_x_025, lower_y_025, s=0, k=3)
-upper_tck_025 = interpolate.splrep(upper_x_025, upper_y_025, s=0, k=3)
-
-lower_x_025 = numpy.linspace(min(lower_x_025), max(lower_x_025), 100)
-upper_x_025 = numpy.linspace(min(upper_x_025), max(upper_x_025), 100)
-
-lower_tck_075 = interpolate.splrep(lower_x_075, lower_y_075, s=0, k=3)
-upper_tck_075 = interpolate.splrep(upper_x_075, upper_y_075, s=0, k=3)
-
-lower_x_075 = numpy.linspace(min(lower_x_075), max(lower_x_075), 100)
-upper_x_075 = numpy.linspace(min(upper_x_075), max(upper_x_075), 100)
-
 # Produce the curves
 lower_curve_0.bezier_function()
 upper_curve_0.bezier_function()
 
-lower_curve_025 = interpolate.BSpline(*lower_tck_025)(lower_x_025)
-upper_curve_025 = interpolate.BSpline(*upper_tck_025)(upper_x_025)
+lower_curve_025 = CubicSpline(lower_x_025, lower_y_025)
+upper_curve_025 = CubicSpline(upper_x_025, upper_y_025)
 
 lower_curve_05.bezier_function()
 upper_curve_05.bezier_function()
 
-lower_curve_075 = interpolate.BSpline(*lower_tck_075)(lower_x_075)
-upper_curve_075 = interpolate.BSpline(*upper_tck_075)(upper_x_075)
+upper_curve_075 = CubicSpline(upper_x_075, upper_y_075)
+lower_curve_075 = CubicSpline(lower_x_075, lower_y_075)
 
 lower_curve_1.bezier_function()
 upper_curve_1.bezier_function()
+
+# Use the data for span 0.25 & 0.75 to generate x-values
+spline_resolution = 100
+lower_x_025 = numpy.linspace(min(lower_x_025), max(lower_x_025), spline_resolution)
+upper_x_025 = numpy.linspace(min(upper_x_025), max(upper_x_025), spline_resolution)
+lower_x_075 = numpy.linspace(min(lower_x_075), max(lower_x_075), spline_resolution)
+upper_x_075 = numpy.linspace(min(upper_x_075), max(upper_x_075), spline_resolution)
 
 # Plot the curves
 lower_curve_0.plot_points()
 upper_curve_0.plot_points()
 
-plt.plot(lower_x_025, lower_curve_025)
-plt.plot(upper_x_025, upper_curve_025)
+plt.plot(lower_x_025, lower_curve_025(lower_x_025))
+plt.plot(upper_x_025, upper_curve_025(upper_x_025))
 
 lower_curve_05.plot_points()
 upper_curve_05.plot_points()
 
-plt.plot(lower_x_075, lower_curve_075)
-plt.plot(upper_x_075, upper_curve_075)
+plt.plot(lower_x_075, lower_curve_075(lower_x_075))
+plt.plot(upper_x_075, upper_curve_075(lower_x_075))
 
 lower_curve_1.plot_points()
 upper_curve_1.plot_points()
 
 plt.show()
 
+# Build the spline along the span of the blade accoring to the span position input from the user
 splines = [
            [lower_x_025, lower_curve_025], 
            [upper_x_025, upper_curve_025],
@@ -183,8 +179,7 @@ suction_side_curves = [
                       ]
 chord_position = 0.25
 span_position = 0.5
-blade_length = 0.2 # m
-ps_ss = 'ss'
+ps_ss = 'ps'
 spanwise_points = []
 
 match ps_ss:
@@ -192,58 +187,43 @@ match ps_ss:
         for curve in pressure_side_curves:
             if type(curve) == BezierCurve:
                 desired_y = curve.get_position(chord_position).y_coord
-                x_positions = curve.get_x_positions()
-                desired_x = chord_position * (max(x_positions) - min(x_positions)) + min(x_positions)
-                spanwise_points.append(Point(desired_x, desired_y))
+                z_positions = curve.get_x_positions()
+                desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
+                spanwise_points.append(Point(desired_z, desired_y))
                 #plt.plot(desired_x, desired_y, marker='*')
 
-            elif type(curve) == numpy.ndarray:
+            elif type(curve) == interpolate._cubic.CubicSpline:
                 for spline in splines:
                     if numpy.array_equal(curve, spline[1]):
-                        desired_y = spline[1][int(chord_position*100)]
-                        x_positions = spline[0]
-                        desired_x = chord_position * (max(x_positions) - min(x_positions)) + min(x_positions)
-                        spanwise_points.append(Point(desired_x, desired_y))
+                        desired_y = curve(chord_position)
+                        z_positions = spline[0]
+                        desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
+                        spanwise_points.append(Point(desired_z, desired_y))
                         #plt.plot(chord_position, desired_y, marker='*')
 
     case 'ss':
         for curve in suction_side_curves:
             if type(curve) == BezierCurve:
                 desired_y = curve.get_position(chord_position).y_coord
-                x_positions = curve.get_x_positions()
-                desired_x = chord_position * (max(x_positions) - min(x_positions)) + min(x_positions)
-                spanwise_points.append(Point(desired_x, desired_y))
+                z_positions = curve.get_x_positions()
+                desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
+                spanwise_points.append(Point(desired_z, desired_y))
                 #plt.plot(desired_x, desired_y, marker='*')
 
-            elif type(curve) == numpy.ndarray:
+            elif type(curve) == interpolate._cubic.CubicSpline:
                 for spline in splines:
                     if numpy.array_equal(curve, spline[1]):
-                        desired_y = spline[1][int(chord_position*100)]
-                        x_positions = spline[0]
-                        desired_x = chord_position * (max(x_positions) - min(x_positions)) + min(x_positions)
-                        spanwise_points.append(Point(desired_x, desired_y))
+                        desired_y = curve(chord_position)
+                        z_positions = spline[0]
+                        desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
+                        spanwise_points.append(Point(desired_z, desired_y))
                         #plt.plot(chord_position, desired_y, marker='*')
 
 # sort the spanwise points by ascending x-values
 spanwise_points = sorted(spanwise_points, key=lambda point: point.x_coord)
+print(spanwise_points)
 
-# Build a spline using the points along the span of the blade
-span_x = [point.x_coord for point in spanwise_points]
-span_y = [point.y_coord for point in spanwise_points]
-span_spline_tck = interpolate.splrep(span_x, span_y, s=0, k=3) 
-
-resolution = 100
-span_x = numpy.linspace(min(span_x), max(span_x), resolution)
-span_spline = interpolate.BSpline(*span_spline_tck)(span_x)
-
-desired_x = span_x[int(span_position*resolution)]
-desired_y = span_spline[int(span_position*resolution)]
+# Build the spline using parametric spline
 
 filename = "Injection Locations"
 #write_coords(filename, [desired_x, desired_y, chord_position])
-'''
-plt.plot(span_x, span_spline)
-plt.plot(desired_x, desired_y, marker='*')
-
-plt.show()
-'''

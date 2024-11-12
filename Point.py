@@ -1,7 +1,7 @@
 class Point:
     # This is a point, but the truer representation of the object is a position vector. Will manipulate it as such.
     def __repr__(self):
-            return f"Point: {round(self.x_coord, 5)}, {round(self.y_coord, 5)}"
+            return f"Point: {round(float(self.x_coord), 5)}, {round(float(self.y_coord), 5)}"
 
     def __init__(self, x, y):
         self.x_coord = x
