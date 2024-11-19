@@ -1,8 +1,9 @@
-from scipy.interpolate import CubicSpline
+from scipy.interpolate import CubicSpline, splev, splrep
 from scipy import interpolate
 import numpy
 import matplotlib.pyplot as plt
 import sys
+import csv
 
 # Change the list of target searches
 sys.path.insert(0, '/home/imasada/code/custom_curves/')
@@ -11,7 +12,7 @@ sys.path.insert(0, '/home/imasada/code/custom_curves/')
 from Point import Point
 from BezierCurve import BezierCurve
 
-def write_coords(coordinates, filename):
+def write_coords(filename, coordinates):
     '''
     Writes the injection locations to a CSV file
     '''
@@ -32,22 +33,22 @@ def write_coords(coordinates, filename):
         csvfile.write('\n')
 
         # Write each set of coordinates as a row in the file
-        for point in sorted_coordinates:
+        for point in coordinates:
             coord_writer.writerow([point[0], point[1], point[2]])
 
-def get_bezier_position(spanwise_points, curve):
+def get_bezier_position(spanwise_points, curve, span_x, chord_position):
     desired_y = curve.get_position(chord_position).y_coord
-    z_positions = curve.get_x_positions()
-    desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
-    spanwise_points.append(Point(desired_z, desired_y))
+    #z_positions = curve.get_x_positions()
+    #desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
+    spanwise_points.append(Point(span_x, desired_y))
 
-def get_spline_position(spanwise_points, splines, curve):
+def get_spline_position(spanwise_points, splines, curve, span_x, chord_position):
     for spline in splines:
         if numpy.array_equal(curve, spline[1]):
-            desired_y = curve(chord_position)
             z_positions = spline[0]
             desired_z = chord_position * (max(z_positions) - min(z_positions)) + min(z_positions)
-            spanwise_points.append(Point(desired_z, desired_y))
+            desired_y = curve(desired_z)
+            spanwise_points.append(Point(span_x, desired_y))
 
 # Read in the control points from the bladegen files
 
@@ -166,7 +167,7 @@ plt.plot(upper_x_075, upper_curve_075(lower_x_075))
 lower_curve_1.plot_points()
 upper_curve_1.plot_points()
 
-plt.show()
+#plt.show()
 
 # Build the spline along the span of the blade accoring to the span position input from the user
 splines = [
@@ -195,29 +196,40 @@ chord_position = 0.25
 span_position = 0.5
 ps_ss = 'ps'
 spanwise_points = []
+span_positions = numpy.arange(0, 1.25, 0.25)
 
 match ps_ss:
     case 'ps':
-        for curve in pressure_side_curves:
+        for idx, curve in enumerate(pressure_side_curves):
             if type(curve) == BezierCurve:
-                get_bezier_position(spanwise_points, curve)
+                get_bezier_position(spanwise_points, curve, span_positions[idx], chord_position)
 
             elif type(curve) == interpolate._cubic.CubicSpline:
-                get_spline_position(spanwise_points, splines, curve)
+                get_spline_position(spanwise_points, splines, curve, span_positions[idx], chord_position)
 
     case 'ss':
         for curve in suction_side_curves:
             if type(curve) == BezierCurve:
-                get_bezier_position(spanwise_points, curve)
+                get_bezier_position(spanwise_points, curve, span_positions[idx], chord_position)
 
             elif type(curve) == interpolate._cubic.CubicSpline:
-                get_spline_position(spanwise_points, splines, curve)
+                get_spline_position(spanwise_points, splines, curve, span_positions[idx], chord_position)
 
+blade_length = 0.8
 # sort the spanwise points by ascending x-values
 spanwise_points = sorted(spanwise_points, key=lambda point: point.x_coord)
-print(spanwise_points)
+spanwise_x = [(point.x_coord * blade_length) for point in spanwise_points]
+spanwise_y = [point.y_coord for point in spanwise_points]
 
-# Build the spline using parametric spline
+span_spline = splrep(spanwise_x, spanwise_y)
+
+x_values = numpy.arange(0, blade_length, 0.01)
+y_values = splev(x_values, span_spline)
+desired_x = chord_position * (max(x_values) - min(x_values)) + min(x_values)
+desired_y = chord_position * (max(y_values) - min(y_values)) + min(y_values)
+#injection_locations = []
+#injection_locations.append(Point(desired_x, desired_y, chord_position))
+injection_locations = [[desired_x, desired_y, chord_position]]
 
 filename = "Injection Locations"
-#write_coords(filename, [desired_x, desired_y, chord_position])
+write_coords(filename, injection_locations)

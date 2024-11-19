@@ -1,0 +1,10 @@
+[Name]
+S1 Blade
+
+[Spatial Fields]
+X,Y,Z
+
+[Data]
+X[m],Y[m],Z[m]
+
+0.1975,-0.005735728843056031,0.25
