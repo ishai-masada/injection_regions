@@ -22,3 +22,5 @@ Assume zero blade twist or turning
 use the x & y positions of those two points to make a straight line between them. Find the slope of this line
 find the desired x-position based on the span position input and the x-positions of the first and last points of the blade.
 use the desired x-position and the slope of the line to obtain the desired y-position
+
+location: "turbine files->dp0->BG->TS" 
