@@ -69,8 +69,6 @@ def get_position(chord_position, span_position, pressure_suction_choice):
             span1_section = CubicSpline(parameter_1, pressure_1)
             final_point = span1_section(chord_position)
 
-            #initial_point = Point(initial_point[0], initial_point[1], initial_point[2])
-            #final_point = Point(initial_point[0], initial_point[1], initial_point[2])
         case 'ss':
             parameter_0 = numpy.linspace(0, 1, len(suction_0))
             span0_section = CubicSpline(parameter_0, suction_0)
@@ -80,16 +78,12 @@ def get_position(chord_position, span_position, pressure_suction_choice):
             span1_section = CubicSpline(parameter_1, suction_1)
             final_point = span1_section(chord_position)
 
-    initial_point = Point(initial_point[0], initial_point[1]).scalar_mul(0.001)
-    final_point = Point(final_point[0], final_point[1]).scalar_mul(0.001)
-
-    write_coords('initial.csv', [[span_0x*0.001, initial_point.x_coord, initial_point.y_coord]])
-    write_coords('final.csv', [[span_1x*0.001, initial_point.x_coord, initial_point.y_coord]])
+    desired_x = (span_0x + span_position*(span_1x - span_0x))
+    initial_point = Point(desired_x, initial_point[0], initial_point[1]).scalar_mul(0.001)
+    final_point = Point(desired_x, final_point[0], final_point[1]).scalar_mul(0.001)
     section_point = initial_point + (final_point - initial_point).scalar_mul(span_position)
-    desired_x = (span_0x + span_position*(span_1x - span_0x)) * 0.001
 
-
-    return desired_x, section_point
+    return section_point
 
 # Read in data
 with open('data/heh.txt', 'r') as f:
@@ -101,13 +95,33 @@ with open('data/heh.txt', 'r') as f:
     #span_075, span_075x, suction_075, pressure_075 = load_data(3)
     section_1, span_1x, suction_1, pressure_1 = load_data(4)
 
-# User Inputs
+# User Input
 span_position = 0.5
 chord_position = 0.5
 ps_ss = 'ps'
 
-# Obtain Injection Location(s)
-x, injection_location = get_position(chord_position, span_position, ps_ss)
-point1 = [x, injection_location.x_coord, injection_location.y_coord]
-write_coords('Injection Locations.csv', [point1]) 
+with open('data/input positions.csv', 'r') as f:
+    raw_data = f.read().splitlines()
+    raw_data.pop(0)
 
+points = []
+
+for group in raw_data:
+    elements = group.split(',')
+
+    span_position = float(elements[0])
+    chord_position = float(elements[1])
+    ps_ss = elements[2]
+
+    injection_location = get_position(chord_position, span_position, ps_ss)
+    points.append([injection_location.x_coord, injection_location.y_coord, injection_location.z_coord])
+
+
+write_coords('Injection Locations.csv', points) 
+
+'''
+# Obtain Injection Location(s)
+injection_location = get_position(chord_position, span_position, ps_ss)
+point1 = [injection_location.x_coord, injection_location.y_coord, injection_location.z_coord]
+write_coords('Injection Locations.csv', [point1]) 
+'''
