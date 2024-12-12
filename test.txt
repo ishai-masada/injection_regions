@@ -1,5 +1,16 @@
 
 '''
+parameter = numpy.linspace(0, 1, len(span_0))
+airfoil_0 = CubicSpline(parameter, span_0)
+# z-values are being offset by 50 millimeters. Reason for offset is unknown
+z0 = [(point[0]*0.001 + 0.045) for point in airfoil_0(parameter)]
+y0 = [point[1]*0.001 for point in airfoil_0(parameter)]
+x0 = numpy.full(len(span_0), 0.5)
+coords = list(zip(x0, z0, y0))
+
+write_coords('beh.csv', coords)
+'''
+'''
 # Parameterize the spline; Each parameter corresponds to a point (z, y)
 t_s0 = numpy.linspace(0, 1, len(suction_0))
 t_p0 = numpy.linspace(0, 1, len(pressure_0))
