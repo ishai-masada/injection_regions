@@ -90,9 +90,6 @@ with open('data/heh.txt', 'r') as f:
     raw_data = f.read().split('\n\n')
 
     section_0, span_0x, suction_0, pressure_0 = load_data(0)
-    #span_025, span_025x, suction_025, pressure_025 = load_data(1)
-    #span_05, span_05x, suction_05, pressure_05 = load_data(2)
-    #span_075, span_075x, suction_075, pressure_075 = load_data(3)
     section_1, span_1x, suction_1, pressure_1 = load_data(4)
 
 # User Input
@@ -118,10 +115,3 @@ for group in raw_data:
 
 
 write_coords('Injection Locations.csv', points) 
-
-'''
-# Obtain Injection Location(s)
-injection_location = get_position(chord_position, span_position, ps_ss)
-point1 = [injection_location.x_coord, injection_location.y_coord, injection_location.z_coord]
-write_coords('Injection Locations.csv', [point1]) 
-'''
